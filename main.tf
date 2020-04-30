@@ -38,7 +38,9 @@
  * }
  * ```
  *
- * Use the `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
+ * Use the optional `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
+ *
+ * Use the optional `cloudwatch_schedule_expression` variable to schedule execution of the Lambda using CloudWatch Events.
  *
  * ## Terraform Version
  *
@@ -134,4 +136,27 @@ resource "aws_lambda_function" "main" {
     variables = var.environment_variables
   }
   tags = var.tags
+}
+
+resource "aws_cloudwatch_event_rule" "main" {
+  count               = length(var.cloudwatch_schedule_expression) > 0 ? 1 : 0
+  name                = length(var.cloudwatch_rule_name) > 0 ? var.cloudwatch_rule_name : var.function_name
+  description         = length(var.cloudwatch_rule_description) > 0 ? var.cloudwatch_rule_description : ""
+  schedule_expression = var.cloudwatch_schedule_expression
+}
+
+resource "aws_cloudwatch_event_target" "main" {
+  count     = length(var.cloudwatch_schedule_expression) > 0 ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.main.0.name
+  target_id = length(var.cloudwatch_target_id) > 0 ? var.cloudwatch_target_id : var.function_name
+  arn       = aws_lambda_function.main.arn
+}
+
+resource "aws_lambda_permission" "main" {
+  count         = length(var.cloudwatch_schedule_expression) > 0 ? 1 : 0
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.main.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.main.0.arn
 }

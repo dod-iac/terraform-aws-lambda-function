@@ -1,3 +1,27 @@
+variable "cloudwatch_rule_description" {
+  type        = string
+  description = "The description of the CloudWatch Events rule used to schedule the execution of the Lambda."
+  default     = ""
+}
+
+variable "cloudwatch_rule_name" {
+  type        = string
+  description = "The name of the CloudWatch Events rule used to schedule the execution of the Lambda.  Defaults to the name of the Lambda function."
+  default     = ""
+}
+
+variable "cloudwatch_schedule_expression" {
+  type        = string
+  description = "The cron or rate expression for the CloudWatch Events rule that triggers the execution of the Lambda.  If blank, then no execution is scheduled."
+  default     = ""
+}
+
+variable "cloudwatch_target_id" {
+  type        = string
+  description = "The id of the CloudWatch Events target.  Defaults to the name of the Lambda function."
+  default     = ""
+}
+
 variable "environment_variables" {
   type        = map(string)
   description = "A map that defines environment variables for the Lambda function."
