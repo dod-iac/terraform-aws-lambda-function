@@ -43,7 +43,7 @@ Use the optional `cloudwatch_schedule_expression` variable to schedule execution
 
 ## Terraform Version
 
-Terraform 0.12. Pin module version to ~> 1.0.0 . Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 1.0.1 . Submit pull-requests to master branch.
 
 Terraform 0.11 is not supported.
 
