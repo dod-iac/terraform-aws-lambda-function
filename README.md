@@ -37,11 +37,13 @@ module "lambda_function" {
 }
 ```
 
-Use the `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
+Use the optional `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
+
+Use the optional `cloudwatch_schedule_expression` variable to schedule execution of the Lambda using CloudWatch Events.
 
 ## Terraform Version
 
-Terraform 0.12. Pin module version to ~> 1.0.0 . Submit pull-requests to master branch.
+Terraform 0.12. Pin module version to ~> 1.0.1 . Submit pull-requests to master branch.
 
 Terraform 0.11 is not supported.
 
@@ -66,6 +68,10 @@ This project constitutes a work of the United States Government and is not subje
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| cloudwatch\_rule\_description | The description of the CloudWatch Events rule used to schedule the execution of the Lambda. | `string` | `""` | no |
+| cloudwatch\_rule\_name | The name of the CloudWatch Events rule used to schedule the execution of the Lambda.  Defaults to the name of the Lambda function. | `string` | `""` | no |
+| cloudwatch\_schedule\_expression | The cron or rate expression for the CloudWatch Events rule that triggers the execution of the Lambda.  If blank, then no execution is scheduled. | `string` | `""` | no |
+| cloudwatch\_target\_id | The id of the CloudWatch Events target.  Defaults to the name of the Lambda function. | `string` | `""` | no |
 | environment\_variables | A map that defines environment variables for the Lambda function. | `map(string)` | `{}` | no |
 | execution\_role\_name | n/a | `string` | n/a | yes |
 | execution\_role\_policy\_document | The contents of the IAM policy attached to the IAM Execution role used by the Lambda.  If not defined, then creates the policy with permissions to log to CloudWatch Logs. | `string` | `""` | no |
