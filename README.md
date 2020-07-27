@@ -37,6 +37,45 @@ module "lambda_function" {
 }
 ```
 
+Creates an AWS Lambda Function with the deployment package stored in AWS S3.
+
+```hcl
+module "lambda_function" {
+  source = "dod-iac/lambda-function/aws"
+
+  execution_role_name = format(
+    "app-%s-func-lambda-execution-role-%s",
+    var.application,
+    var.environment
+  )
+
+  function_name = format(
+    "app-%s-func-%s-%s",
+    var.application,
+    var.environment,
+    data.aws_region.current.name
+  )
+
+  function_description = "Function description."
+
+  handler = "index.handler"
+
+  runtime = "nodejs12.x"
+
+  s3_bucket = aws_s3_bucket.lambda.id
+
+  s3_key = aws_s3_bucket_object.lambda.key
+
+  environment_variables = var.environment_variables
+
+  tags = {
+    Application = var.application
+    Environment = var.environment
+    Automation  = "Terraform"
+  }
+}
+```
+
 Use the optional `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
 
 Use the optional `cloudwatch_schedule_expression` variable to schedule execution of the Lambda using CloudWatch Events.
@@ -76,13 +115,15 @@ This project constitutes a work of the United States Government and is not subje
 | execution\_role\_name | n/a | `string` | n/a | yes |
 | execution\_role\_policy\_document | The contents of the IAM policy attached to the IAM Execution role used by the Lambda.  If not defined, then creates the policy with permissions to log to CloudWatch Logs. | `string` | `""` | no |
 | execution\_role\_policy\_name | The name of the IAM policy attached to the IAM Execution role used by the Lambda.  If not defined, then uses the value of "execution\_role\_name". | `string` | `""` | no |
-| filename | The path to the function's deployment package within the local filesystem.  If defined, the s3\_-prefixed options cannot be used. | `string` | n/a | yes |
+| filename | The path to the function's deployment package within the local filesystem.  If defined, the s3\_-prefixed options cannot be used. | `string` | `null` | no |
 | function\_description | Description of what your Lambda Function does. | `string` | `""` | no |
 | function\_name | A unique name for your Lambda Function. | `string` | n/a | yes |
 | handler | The function entrypoint in your code. | `string` | n/a | yes |
 | layers | List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function. | `list(string)` | `[]` | no |
 | memory\_size | Amount of memory in MB your Lambda Function can use at runtime. | `number` | `128` | no |
 | runtime | The identifier of the function's runtime. | `string` | n/a | yes |
+| s3\_bucket | The S3 bucket location containing the function's deployment package.  Conflicts with filename.  This bucket must reside in the same AWS region where you are creating the Lambda function. | `string` | `null` | no |
+| s3\_key | The S3 key of an object containing the function's deployment package.  Conflicts with filename. | `string` | `null` | no |
 | tags | A mapping of tags to assign to the Lambda Function. | `map(string)` | <pre>{<br>  "Automation": "Terraform"<br>}</pre> | no |
 | timeout | The amount of time your Lambda Function has to run in seconds. | `number` | `3` | no |
 

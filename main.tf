@@ -38,6 +38,45 @@
  * }
  * ```
  *
+ * Creates an AWS Lambda Function with the deployment package stored in AWS S3.
+ *
+ * ```hcl
+ * module "lambda_function" {
+ *   source = "dod-iac/lambda-function/aws"
+ *
+ *   execution_role_name = format(
+ *     "app-%s-func-lambda-execution-role-%s",
+ *     var.application,
+ *     var.environment
+ *   )
+ *
+ *   function_name = format(
+ *     "app-%s-func-%s-%s",
+ *     var.application,
+ *     var.environment,
+ *     data.aws_region.current.name
+ *   )
+ *
+ *   function_description = "Function description."
+ *
+ *   handler = "index.handler"
+ *
+ *   runtime = "nodejs12.x"
+ *
+ *   s3_bucket = aws_s3_bucket.lambda.id
+ *
+ *   s3_key = aws_s3_bucket_object.lambda.key
+ *
+ *   environment_variables = var.environment_variables
+ *
+ *   tags = {
+ *     Application = var.application
+ *     Environment = var.environment
+ *     Automation  = "Terraform"
+ *   }
+ * }
+ * ```
+ *
  * Use the optional `execution_role_policy_document` variable to override the IAM policy document for the IAM role.
  *
  * Use the optional `cloudwatch_schedule_expression` variable to schedule execution of the Lambda using CloudWatch Events.
@@ -123,12 +162,14 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
 resource "aws_lambda_function" "main" {
   function_name    = var.function_name
   description      = var.function_description
-  filename         = var.filename
-  source_code_hash = filebase64sha256(var.filename)
+  filename         = length(var.filename) > 0 ? var.filename : null
+  source_code_hash = length(var.filename) > 0 ? filebase64sha256(var.filename) : null
   handler          = var.handler
   layers           = var.layers
   runtime          = var.runtime
   role             = aws_iam_role.execution_role.arn
+  s3_bucket        = length(var.filename) > 0 ? null : var.s3_bucket
+  s3_key           = length(var.filename) > 0 ? null : var.s3_key
   timeout          = var.timeout
   memory_size      = var.memory_size
   publish          = true

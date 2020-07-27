@@ -47,6 +47,7 @@ variable "execution_role_policy_name" {
 variable "filename" {
   type        = string
   description = "The path to the function's deployment package within the local filesystem.  If defined, the s3_-prefixed options cannot be used."
+  default     = ""
 }
 
 variable "function_name" {
@@ -80,6 +81,18 @@ variable "memory_size" {
 variable "runtime" {
   type        = string
   description = "The identifier of the function's runtime."
+}
+
+variable "s3_bucket" {
+  type        = string
+  description = "The S3 bucket location containing the function's deployment package.  Conflicts with filename.  This bucket must reside in the same AWS region where you are creating the Lambda function."
+  default     = ""
+}
+
+variable "s3_key" {
+  type        = string
+  description = "The S3 key of an object containing the function's deployment package.  Conflicts with filename."
+  default     = ""
 }
 
 variable "tags" {
