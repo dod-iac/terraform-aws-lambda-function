@@ -138,6 +138,10 @@ resource "aws_lambda_function" "main" {
   tags = var.tags
 }
 
+#
+# CloudWatch Events
+#
+
 resource "aws_cloudwatch_event_rule" "main" {
   count               = length(var.cloudwatch_schedule_expression) > 0 ? 1 : 0
   name                = length(var.cloudwatch_rule_name) > 0 ? var.cloudwatch_rule_name : var.function_name
@@ -159,4 +163,14 @@ resource "aws_lambda_permission" "main" {
   function_name = aws_lambda_function.main.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.main.0.arn
+}
+
+#
+# Event Sources
+#
+
+resource "aws_lambda_event_source_mapping" "main" {
+  count            = length(var.event_sources)
+  function_name    = aws_lambda_function.main.arn
+  event_source_arn = var.event_sources[count.index].event_source_arn
 }

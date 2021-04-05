@@ -28,6 +28,14 @@ variable "environment_variables" {
   default     = {}
 }
 
+variable "event_sources" {
+  type = list(object({
+    event_source_arn = string
+  }))
+  description = "A list of event sources"
+  default     = []
+}
+
 variable "execution_role_name" {
   type = string
 }
