@@ -28,6 +28,14 @@ variable "environment_variables" {
   default     = {}
 }
 
+variable "event_sources" {
+  type = list(object({
+    event_source_arn = string
+  }))
+  description = "A list of event sources"
+  default     = []
+}
+
 variable "execution_role_name" {
   type = string
 }
@@ -47,6 +55,7 @@ variable "execution_role_policy_name" {
 variable "filename" {
   type        = string
   description = "The path to the function's deployment package within the local filesystem.  If defined, the s3_-prefixed options cannot be used."
+  default     = ""
 }
 
 variable "function_name" {
@@ -65,6 +74,30 @@ variable "handler" {
   description = "The function entrypoint in your code."
 }
 
+variable "image_cmd" {
+  type        = list(string)
+  description = "Optional positional arguments that you want to pass to the program at the path specified by the image_entrypoint variable."
+  default     = []
+}
+
+variable "image_entrypoint" {
+  type        = list(string)
+  description = "If specified, overrides the entry point to your application, which is typically the location of the runtime executable."
+  default     = []
+}
+
+variable "image_workdir" {
+  type        = string
+  description = "If specified, overrides the working directory of the container."
+  default     = ""
+}
+
+variable "image_uri" {
+  type        = string
+  description = "ECR image URI containing the function's deployment package."
+  default     = ""
+}
+
 variable "layers" {
   type        = list(string)
   description = "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function."
@@ -77,9 +110,39 @@ variable "memory_size" {
   default     = 128
 }
 
+variable "package_type" {
+  type        = string
+  description = "Lambda deployment package type. Valid values are Zip and Image."
+  default     = "Zip"
+}
+
 variable "runtime" {
   type        = string
   description = "The identifier of the function's runtime."
+}
+
+variable "s3_bucket" {
+  type        = string
+  description = "S3 bucket location containing the function's deployment package.  This bucket must reside in the same AWS region where you are creating the Lambda function."
+  default     = ""
+}
+
+variable "s3_key" {
+  type        = string
+  description = "S3 key of an object containing the function's deployment package."
+  default     = ""
+}
+
+variable "s3_object_version" {
+  type        = string
+  description = "Object version containing the function's deployment package."
+  default     = ""
+}
+
+variable "source_code_hash" {
+  type        = string
+  description = "The base64-encoded SHA256 hash of the package file specified with either filename or s3_key.  If not set, hashes the file specified by filename."
+  default     = ""
 }
 
 variable "tags" {

@@ -1,7 +1,7 @@
 /**
  * ## Usage
  *
- * Creates an AWS Lambda Function.
+ * Creates an AWS Lambda Function from a local zip file.
  *
  * ```hcl
  * module "lambda_function" {
@@ -23,6 +23,49 @@
  *   function_description = "Function description."
  *
  *   filename = format("../../lambda/%s-func.zip", var.application)
+ *
+ *   handler = "index.handler"
+ *
+ *   runtime = "nodejs12.x"
+ *
+ *   environment_variables = var.environment_variables
+ *
+ *   tags = {
+ *     Application = var.application
+ *     Environment = var.environment
+ *     Automation  = "Terraform"
+ *   }
+ * }
+ * ```
+ *
+ * Creates an AWS Lambda Function from an ECR container image.
+ *
+ * ```hcl
+ * data "aws_ecr_repository" "main" {
+ *   name = format("app-%s", var.application)
+ * }
+ *
+ * module "lambda_function" {
+ *   source = "dod-iac/lambda-function/aws"
+ *
+ *   execution_role_name = format(
+ *     "app-%s-func-lambda-execution-role-%s",
+ *     var.application,
+ *     var.environment
+ *   )
+ *
+ *   function_name = format(
+ *     "app-%s-func-%s-%s",
+ *     var.application,
+ *     var.environment,
+ *     data.aws_region.current.name
+ *   )
+ *
+ *   function_description = "Function description."
+ *
+ *   package_type = "Image"
+ *
+ *   image_uri = format("%s:latest", data.aws_ecr_repository.main.repository_url)
  *
  *   handler = "index.handler"
  *
@@ -121,22 +164,40 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
 }
 
 resource "aws_lambda_function" "main" {
-  function_name    = var.function_name
-  description      = var.function_description
-  filename         = var.filename
-  source_code_hash = filebase64sha256(var.filename)
-  handler          = var.handler
-  layers           = var.layers
-  runtime          = var.runtime
-  role             = aws_iam_role.execution_role.arn
+  description       = var.function_description
+  filename          = length(var.filename) > 0 ? var.filename : null
+  function_name     = var.function_name
+  handler           = var.handler
+  image_uri         = length(var.image_uri) > 0 ? var.image_uri : null
+  layers            = var.layers
+  memory_size       = var.memory_size
+  package_type      = var.package_type
+  publish           = true
+  runtime           = var.runtime
+  role              = aws_iam_role.execution_role.arn
+  s3_bucket         = length(var.s3_bucket) > 0 ? var.s3_bucket : null
+  s3_key            = length(var.s3_key) > 0 ? var.s3_key : null
+  s3_object_version = length(var.s3_object_version) > 0 ? var.s3_object_version : null
+  #source_code_hash  = length(var.filename) > 0 ? (length(var.source_code_hash) > 0 ? var.source_code_hash : filebase64sha256(var.filename)) : null
+  source_code_hash = length(var.filename) > 0 ? filebase64sha256(var.filename) : null
+  tags             = var.tags
   timeout          = var.timeout
-  memory_size      = var.memory_size
-  publish          = true
   environment {
     variables = var.environment_variables
   }
-  tags = var.tags
+  dynamic "image_config" {
+    for_each = var.package_type == "Image" ? [true] : []
+    content {
+      command           = length(var.image_cmd) > 0 ? var.image_cmd : null
+      entry_point       = length(var.image_entrypoint) > 0 ? var.image_entrypoint : null
+      working_directory = length(var.image_workdir) > 0 ? var.image_workdir : null
+    }
+  }
 }
+
+#
+# CloudWatch Events
+#
 
 resource "aws_cloudwatch_event_rule" "main" {
   count               = length(var.cloudwatch_schedule_expression) > 0 ? 1 : 0
@@ -159,4 +220,14 @@ resource "aws_lambda_permission" "main" {
   function_name = aws_lambda_function.main.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.main.0.arn
+}
+
+#
+# Event Sources
+#
+
+resource "aws_lambda_event_source_mapping" "main" {
+  count            = length(var.event_sources)
+  function_name    = aws_lambda_function.main.arn
+  event_source_arn = var.event_sources[count.index].event_source_arn
 }
