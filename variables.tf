@@ -73,6 +73,12 @@ variable "handler" {
   description = "The function entrypoint in your code."
 }
 
+variable "kms_key_arn" {
+  type        = string
+  description = "The ARN of the KMS key used to encrypt environment variables."
+  default     = ""
+}
+
 variable "layers" {
   type        = list(string)
   description = "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function."

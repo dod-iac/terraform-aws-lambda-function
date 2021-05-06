@@ -42,6 +42,8 @@
  *
  * Use the optional `cloudwatch_schedule_expression` variable to schedule execution of the Lambda using CloudWatch Events.
  *
+ * Use the optional `kms_key_arn` variable to encrypt the environment variables with a custom KMS key.  Use the `dod-iac/lambda-kms-key/aws` module to create a KMS key.
+ *
  * ## Terraform Version
  *
  * Terraform 0.12. Pin module version to ~> 1.0.1 . Submit pull-requests to master branch.
@@ -127,6 +129,7 @@ resource "aws_lambda_function" "main" {
   source_code_hash = filebase64sha256(var.filename)
   handler          = var.handler
   layers           = var.layers
+  kms_key_arn      = length(var.kms_key_arn) > 0 && length(var.environment_variables) > 0 ? var.kms_key_arn : null
   runtime          = var.runtime
   role             = aws_iam_role.execution_role.arn
   timeout          = var.timeout
