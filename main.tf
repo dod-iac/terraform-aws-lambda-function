@@ -129,7 +129,7 @@ resource "aws_lambda_function" "main" {
   source_code_hash = filebase64sha256(var.filename)
   handler          = var.handler
   layers           = var.layers
-  kms_key_arn      = length(var.environment_variables) > 0 ? var.kms_key_arn : null
+  kms_key_arn      = length(var.kms_key_arn) > 0 && length(var.environment_variables) > 0 ? var.kms_key_arn : null
   runtime          = var.runtime
   role             = aws_iam_role.execution_role.arn
   timeout          = var.timeout
