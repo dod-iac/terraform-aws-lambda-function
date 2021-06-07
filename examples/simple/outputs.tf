@@ -1,3 +1,3 @@
-output "queue_url" {
-  value       = module.sqs_queue.url
+output "lambda_function_name" {
+  value = module.lambda_function.lambda_function_name
 }
