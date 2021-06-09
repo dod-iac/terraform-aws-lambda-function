@@ -5,6 +5,7 @@
 //
 // =================================================================
 
+
 data "aws_region" "current" {}
 
 data "archive_file" "lambda_simple_zip_inline" {
@@ -35,7 +36,7 @@ module "lambda_function" {
 
   runtime = "python3.8"
 
-  environment_variables = {}
+  environment_variables = { Automation = "Terraform" }
 
   tags = var.tags
 }
