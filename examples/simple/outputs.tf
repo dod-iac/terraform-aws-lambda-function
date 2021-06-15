@@ -13,3 +13,7 @@ output "tags" {
 output "test_name" {
   value = var.test_name
 }
+
+output "public_ip" {
+  value = aws_instance.example.public_ip
+}

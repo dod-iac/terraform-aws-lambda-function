@@ -12,11 +12,14 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+
+	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
 
 	// "github.com/aws/aws-sdk-go/aws"
 	// "github.com/aws/aws-sdk-go/aws/session"
@@ -53,31 +56,10 @@ func TestTerraformSimpleExample(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 
 	// lambdaFunctionName := terraform.Output(t, terraformOptions, "lambda_function_name")
-//
-// 	s := session.Must(session.NewSession())
-//
-// 	c := sqs.New(s, aws.NewConfig().WithRegion(region))
-//
-// 	messageBody := "test-"+strings.ToLower(random.UniqueId())
-//
-// 	_, sendMessageError := c.SendMessage(&sqs.SendMessageInput{
-// 		QueueUrl:    aws.String(queueURL),
-// 		MessageBody: aws.String(messageBody),
-// 	})
-//
-// 	require.NoError(t, sendMessageError)
-//
-// 	waitTimeSeconds := int64(5)
-//
-// 	receiveMessageOutput, recieveMessageError := c.ReceiveMessage(&sqs.ReceiveMessageInput{
-// 		QueueUrl:        aws.String(queueURL),
-// 		WaitTimeSeconds: aws.Int64(waitTimeSeconds),
-// 	})
-//
-// 	require.NoError(t, recieveMessageError)
-//
-// 	require.Len(t, receiveMessageOutput.Messages, 1)
-// 	msg := receiveMessageOutput.Messages[0]
-// 	require.NotNil(t, msg)
-// 	require.Equal(t, aws.StringValue(msg.Body), messageBody, "input and output messages are not equal")
+	// get the ip address of the instance
+	publicIp := terraform.Output(t, terraformOptions, "public_ip")
+	// Make an HTTP request to the instance & make sure we get back a 200 OK with expected body
+	url := fmt.Sprintf("http://%s:8080", publicIp)
+	http_helper.HttpGetWithRetry(t, url, nil, 200, "hello world", 30, 5*time.Second)
+
 }

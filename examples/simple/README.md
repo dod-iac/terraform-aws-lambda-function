@@ -34,6 +34,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | n/a |
 | <a name="output_tags"></a> [tags](#output\_tags) | n/a |
 | <a name="output_test_name"></a> [test\_name](#output\_test\_name) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
