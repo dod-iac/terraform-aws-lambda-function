@@ -55,7 +55,7 @@ func TestTerraformSimpleExample(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
-	// lambdaFunctionName := terraform.Output(t, terraformOptions, "lambda_function_name")
+	lambdaFunctionName := terraform.Output(t, terraformOptions, "lambda_function_name")
 	// get the ip address of the instance
 	publicIp := terraform.Output(t, terraformOptions, "public_ip")
 	// Make an HTTP request to the instance & make sure we get back a 200 OK with expected body

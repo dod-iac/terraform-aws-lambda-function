@@ -14,6 +14,22 @@ data "archive_file" "lambda_simple_zip_inline" {
   output_path = "../../temp/lambda/simple.zip"
 }
 
+
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = format(
+    "test-vpc-%s",
+    var.test_name
+  )
+
+  cidr = "10.10.0.0/16"
+
+  azs           = ["us-west-1a", "us-west-1b", "us-west-1c"]
+  intra_subnets = ["10.10.101.0/24", "10.10.102.0/24", "10.10.103.0/24"]
+}
+
+
 module "lambda_function" {
   source = "../../"
 
@@ -27,6 +43,9 @@ module "lambda_function" {
     var.test_name,
     data.aws_region.current.name
   )
+
+  vpc_subnet_ids         = module.vpc.intra_subnets
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
 
   function_description = "Function description."
 
