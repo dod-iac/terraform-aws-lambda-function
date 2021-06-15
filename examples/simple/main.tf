@@ -44,8 +44,22 @@ module "lambda_function" {
     data.aws_region.current.name
   )
 
-  vpc_subnet_ids         = module.vpc.intra_subnets
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  resource "aws_instance" "example" {
+    ami = "ami-0d5d9d301c853a04a"
+    # instance_type          = "t2.micro"
+    # vpc_security_group_ids = [module.vpc.default_security_group_id]
+  }
+
+  resource "aws_security_group" "instance" {
+    ingress {
+      from_port   = 8080
+      to_port     = 8080
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+
 
   function_description = "Function description."
 
