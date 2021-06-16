@@ -12,18 +12,12 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
-
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/stretchr/testify/require"
-
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-
-	http_helper "github.com/gruntwork-io/terratest/modules/http-helper"
-
-	// "github.com/aws/aws-sdk-go/aws"
-	// "github.com/aws/aws-sdk-go/aws/session"
-	// "github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 )
 
 func TestTerraformSimpleExample(t *testing.T) {
@@ -55,11 +49,19 @@ func TestTerraformSimpleExample(t *testing.T) {
 
 	terraform.InitAndApply(t, terraformOptions)
 
-	// lambdaFunctionName := terraform.Output(t, terraformOptions, "lambda_function_name")
-	// get the ip address of the instance
-	publicIp := terraform.Output(t, terraformOptions, "public_ip")
-	// Make an HTTP request to the instance & make sure we get back a 200 OK with expected body
-	url := fmt.Sprintf("http://%s:8080", publicIp)
-	http_helper.HttpGetWithRetry(t, url, nil, 200, "hello world", 30, 5*time.Second)
+	lambdaFunctionName := terraform.Output(t, terraformOptions, "lambda_function_name")
+	s := session.Must(session.NewSession())
+
+	c := lambda.New(s, aws.NewConfig().WithRegion(region))
+	// https://docs.aws.amazon.com/sdk-for-go/api/service/lambda/#InvokeInput
+	invokeOutput, invokeError := c.Invoke(&lambda.InvokeInput{
+		FunctionName: aws.String(lambdaFunctionName),
+		Payload:      []byte("{}"),
+		// Qualifier:    aws.String("1"),
+	})
+
+	require.NoError(t, invokeError)
+	payload := string(invokeOutput.Payload)
+	require.Equal(t, payload, "\"hello world\"")
 
 }

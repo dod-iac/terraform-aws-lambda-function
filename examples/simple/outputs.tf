@@ -14,6 +14,6 @@ output "test_name" {
   value = var.test_name
 }
 
-output "public_ip" {
-  value = aws_instance.example.public_ip
+output "lambda_function_name" {
+  value = module.lambda_function.lambda_function_name
 }
