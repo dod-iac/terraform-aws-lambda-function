@@ -6,3 +6,4 @@ bin
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfstate.*.backup
+*.zip
