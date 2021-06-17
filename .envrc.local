@@ -1,3 +1,0 @@
-export AWS_DEFAULT_REGION=us-west-2
-
-export TT_SKIP_DESTROY=1
