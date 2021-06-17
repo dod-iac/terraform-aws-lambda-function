@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/stretchr/testify/require"
 	"github.com/gruntwork-io/terratest/modules/random"
