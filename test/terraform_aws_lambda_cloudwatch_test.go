@@ -21,7 +21,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
-func TestTerraformSimpleExample(t *testing.T) {
+func TestTerraformCloudwatchTrigger(t *testing.T) {
 	t.Parallel()
 
 	region := os.Getenv("AWS_DEFAULT_REGION")
