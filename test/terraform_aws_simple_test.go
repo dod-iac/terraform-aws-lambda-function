@@ -54,11 +54,10 @@ func TestTerraformSimpleExample(t *testing.T) {
 	s := session.Must(session.NewSession())
 
 	c := lambda.New(s, aws.NewConfig().WithRegion(region))
-	// https://docs.aws.amazon.com/sdk-for-go/api/service/lambda/#InvokeInput
+
 	invokeOutput, invokeError := c.Invoke(&lambda.InvokeInput{
 		FunctionName: aws.String(lambdaFunctionName),
 		Payload:      []byte("{}"),
-		// Qualifier:    aws.String("1"),
 	})
 
 	require.NoError(t, invokeError)
