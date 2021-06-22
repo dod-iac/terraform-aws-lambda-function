@@ -27,16 +27,16 @@ func TestTerraformSimpleExample(t *testing.T) {
 	region := os.Getenv("AWS_DEFAULT_REGION")
 	require.NotEmpty(t, region, "missing environment variable AWS_DEFAULT_REGION")
 
-	testName := fmt.Sprintf("tt-lf-simple-%s", strings.ToLower(random.UniqueId()))
+	testName := fmt.Sprintf("tt-lf-cw-trigger-%s", strings.ToLower(random.UniqueId()))
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/simple",
+		TerraformDir: "../examples/cloudwatch-trigger",
 		Vars: map[string]interface{}{
 			"test_name": testName,
 			"tags": map[string]interface{}{
 				"Automation": "Terraform",
 				"Terratest":  "yes",
-				"Test":       "TestTerraformSimpleExample",
+				"Test":       "TestTerraformCloudwatchTrigger",
 			},
 		},
 		EnvVars: map[string]string{
