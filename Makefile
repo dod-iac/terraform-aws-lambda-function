@@ -69,7 +69,7 @@ bin/ineffassign: ## Make go binary ineffassign
 bin/staticcheck: ## Make go binary staticcheck
 	go build -o bin/staticcheck honnef.co/go/tools/cmd/staticcheck
 
-bin/shadow:  ## Make go binary shadow
+bin/shadow: ## Make go binary shadow
 	go build -o bin/shadow golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
 
 .PHONY: tools ## Install all binary tools
