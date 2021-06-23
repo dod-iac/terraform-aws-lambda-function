@@ -17,6 +17,8 @@ data "archive_file" "lambda_simple_zip_inline" {
 module "lambda_function" {
   source = "../../"
 
+  source_directory = "./script_src/"
+
   execution_role_name = format(
     "test-func-lambda-execution-role-%s",
     var.test_name
@@ -39,4 +41,6 @@ module "lambda_function" {
   environment_variables = { Automation = "Terraform" }
 
   tags = var.tags
+
+  schedule_expression = "rate(1 minute)"
 }
