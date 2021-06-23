@@ -19,7 +19,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/require"
-
 )
 
 func TestTerraformSimpleExample(t *testing.T) {
