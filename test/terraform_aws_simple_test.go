@@ -13,12 +13,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/stretchr/testify/require"
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTerraformSimpleExample(t *testing.T) {
