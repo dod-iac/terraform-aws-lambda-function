@@ -44,7 +44,7 @@ Use the optional `cloudwatch_schedule_expression` variable to schedule execution
 
 Use the optional `kms_key_arn` variable to encrypt the environment variables with a custom KMS key.  Use the `dod-iac/lambda-kms-key/aws` module to create a KMS key.
 
-Use the optional `security_group_ids` and `subnet_ids` variable to run the function within a VPC.
+Use the optional `security_group_ids` and `subnet_ids` variables to run the function within a VPC.
 
 ## Testing
 
