@@ -22,4 +22,22 @@ if ! command -v terraform > /dev/null; then
   exit 1
 fi
 
-go test -short -count 1 -timeout 15m "${DIR}/../test/..."
+echo "Verifying AWS credentials"
+
+aws sts get-caller-identity > /dev/null
+
+echo "Running tests"
+
+if [[ -z "${TT_TEST_NAME:-}" ]]; then
+  if [[ "${TT_VERBOSE:-}" == "1" ]]; then
+    go test -v -short -count 1 -timeout ${TT_TIMEOUT:-15m} "${DIR}/../test/..."
+  else
+    go test -short -count 1 -timeout ${TT_TIMEOUT:-15m} "${DIR}/../test/..."
+  fi
+else
+  if [[ "${TT_VERBOSE:-}" == "1" ]]; then
+    go test -v -short -count 1 -timeout ${TT_TIMEOUT:-15m} -run "${TT_TEST_NAME}" "${DIR}/../test/..."
+  else
+    go test -short -count 1 -timeout ${TT_TIMEOUT:-15m} -run "${TT_TEST_NAME}" "${DIR}/../test/..."
+  fi
+fi

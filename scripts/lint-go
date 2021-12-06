@@ -26,7 +26,7 @@ check_command () {
 
 # Validate that the commands exist
 check_command errcheck
-check_command ineffassign
+check_command misspell
 check_command shadow
 check_command staticcheck
 
@@ -35,13 +35,13 @@ echo "Running go vet"
 go vet $pkgs
 echo "******************"
 echo "Running go vet with shadow"
-go vet -vettool="${DIR}/../bin/shadow" $pkgs
+go vet -vettool="bin/shadow" $pkgs
 echo "******************"
 echo "Running errcheck"
 bin/errcheck ${pkgs}
 echo "******************"
-echo "Running ineffassign"
-bin/ineffassign ./test
-echo "******************"
 echo "Running staticcheck"
 bin/staticcheck -checks all ${pkgs}
+echo "******************"
+echo "Running misspell"
+bin/misspell -locale US -error *.md *.go

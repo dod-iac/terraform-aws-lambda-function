@@ -135,10 +135,17 @@ resource "aws_lambda_function" "main" {
   timeout          = var.timeout
   memory_size      = var.memory_size
   publish          = true
+  tags = var.tags
   environment {
     variables = var.environment_variables
   }
-  tags = var.tags
+  dynamic "vpc_config" {
+    for_each = length(var.security_group_ids) > 0 && length(var.subnet_ids) > 0 ? [1] : []
+    content {
+      security_group_ids = var.security_group_ids
+      subnet_ids         = var.subnet_ids
+    }
+  }
 }
 
 #
