@@ -96,6 +96,16 @@ variable "runtime" {
   description = "The identifier of the function's runtime."
 }
 
+variable "security_group_ids" {
+  type        = list(string)
+  description = "List of security group IDs associated with the Lambda function."
+}
+
+variable "subnet_ids" {
+  type        = list(string)
+  description = "List of subnet IDs associated with the Lambda function."
+}
+
 variable "tags" {
   type        = map(string)
   description = "A mapping of tags to assign to the Lambda Function."

@@ -5,7 +5,7 @@
 //
 // =================================================================
 
-// +build tools
+//go:build tools
 
 // This file exists to track tool dependencies. This is one of the recommended practices
 // for handling tool dependencies in a Go module as outlined here:
@@ -14,7 +14,7 @@
 package tools
 
 import (
-	_ "github.com/gordonklaus/ineffassign"
+	_ "github.com/client9/misspell"
 	_ "github.com/kisielk/errcheck"
 	_ "golang.org/x/tools/cmd/goimports"
 	_ "golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow"

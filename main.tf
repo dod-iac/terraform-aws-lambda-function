@@ -44,6 +44,12 @@
  *
  * Use the optional `kms_key_arn` variable to encrypt the environment variables with a custom KMS key.  Use the `dod-iac/lambda-kms-key/aws` module to create a KMS key.
  *
+ * Use the optional `security_group_ids` and `subnet_ids` variables to run the function within a VPC.
+ *
+ * ## Testing
+ *
+ * Run all terratest tests using the `terratest` script.  If using `aws-vault`, you could use `aws-vault exec $AWS_PROFILE -- terratest`.  The `AWS_DEFAULT_REGION` environment variable is required by the tests.  Use `TT_SKIP_DESTROY=1` to not destroy the infrastructure created during the tests.  Use `TT_VERBOSE=1` to log all tests as they are run.  Use `TT_TIMEOUT` to set the timeout for the tests, with the value being in the Go format, e.g., 15m.  Use `TT_TEST_NAME` to run a specific test by name.
+ *
  * ## Terraform Version
  *
  * Terraform 0.12. Pin module version to ~> 1.0.1 . Submit pull-requests to master branch.
@@ -135,10 +141,17 @@ resource "aws_lambda_function" "main" {
   timeout          = var.timeout
   memory_size      = var.memory_size
   publish          = true
+  tags             = var.tags
   environment {
     variables = var.environment_variables
   }
-  tags = var.tags
+  dynamic "vpc_config" {
+    for_each = length(var.security_group_ids) > 0 && length(var.subnet_ids) > 0 ? [1] : []
+    content {
+      security_group_ids = var.security_group_ids
+      subnet_ids         = var.subnet_ids
+    }
+  }
 }
 
 #
