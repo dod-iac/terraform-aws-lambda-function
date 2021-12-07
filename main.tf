@@ -129,6 +129,9 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
 }
 
 resource "aws_lambda_function" "main" {
+  depends_on = [
+    aws_iam_role_policy_attachment.execution_role
+  ]
   function_name    = var.function_name
   description      = var.function_description
   filename         = var.filename
