@@ -68,6 +68,14 @@ if %1%==update_docs (
 
   powershell "%~dp0scripts\update-readme-windows.ps1"
 
+  for /R "%~dp0examples" %%e in (.) do (
+    if exist %%e\main.tf (
+      pushd %%e
+      powershell "%~dp0scripts\update-readme-windows.ps1"
+      popd
+    )
+  )
+
   exit /B 0
 )
 
